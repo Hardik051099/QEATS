@@ -2,12 +2,16 @@
 /*
  *
  * * Copyright (c) Crio.Do 2019. All rights reserved
+ *  * Copyright (c) Crio.Do 2019. All rights reserved
  *
  */
 
 package com.crio.qeats.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.data.annotation.Id;
+import java.util.ArrayList;
 import java.util.List;
 import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -34,6 +38,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Restaurant {
   @NotNull
   private String restaurantId;
@@ -45,5 +50,6 @@ public class Restaurant {
   private String opensAt;
   private String closesAt;
   private List<String> attributes;
+
 }
 
