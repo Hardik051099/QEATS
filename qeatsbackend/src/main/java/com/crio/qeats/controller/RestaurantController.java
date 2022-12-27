@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @RestController
+@RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
 public class RestaurantController {
 
   public static final String RESTAURANT_API_ENDPOINT = "/qeats/v1";
@@ -47,18 +48,14 @@ public class RestaurantController {
   @Autowired
   private RestaurantService restaurantService;
 
-
-
-  @GetMapping(RESTAURANT_API_ENDPOINT+RESTAURANTS_API)
-  public ResponseEntity<GetRestaurantsResponse> getRestaurants(
+  
+  @GetMapping(RESTAURANTS_API)
+  public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
        GetRestaurantsRequest getRestaurantsRequest) {
 
     log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
-    
-    if(!(coordsValidator(getRestaurantsRequest.getLatitude(), getRestaurantsRequest.getLongitude()))){
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).body(null);
-    }
+
       //CHECKSTYLE:OFF
       getRestaurantsResponse = restaurantService
           .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
@@ -66,11 +63,6 @@ public class RestaurantController {
       //CHECKSTYLE:ON
 
     return ResponseEntity.ok().body(getRestaurantsResponse);
-  }
-
-  private boolean coordsValidator(Double latitude, Double longitude){
-    return (latitude == null || longitude == null
-    ||(latitude<MIN_LAT || latitude>MAX_LAT)||((longitude<MIN_LON || longitude>MAX_LON)))?false:true;
   }
 
 

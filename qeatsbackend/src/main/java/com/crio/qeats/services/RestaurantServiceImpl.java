@@ -52,12 +52,14 @@ public class RestaurantServiceImpl implements RestaurantService {
       return normalHoursServingRadiusInKms;
   }
   private boolean isPeakHours(LocalTime currentTime){
-      if((!currentTime.isBefore(LocalTime.parse("08:00"))&&!currentTime.isAfter(LocalTime.parse("10:00")))||
-      (!currentTime.isBefore(LocalTime.parse("13:00"))&&!currentTime.isAfter(LocalTime.parse("14:00"))) ||
-      (!currentTime.isBefore(LocalTime.parse("19:00"))&&!currentTime.isAfter(LocalTime.parse("21:00")))){
-        return true;
-      }
-      return false;
+
+      return isTimeWithinRange(LocalTime.of(7, 59), LocalTime.of(10, 1), currentTime) || 
+             isTimeWithinRange(LocalTime.of(12, 59), LocalTime.of(14, 1), currentTime) ||
+             isTimeWithinRange(LocalTime.of(18, 59), LocalTime.of(21, 1), currentTime);
+  }
+  private boolean isTimeWithinRange(LocalTime start,LocalTime end, LocalTime current){
+    return current.isAfter(start) && current.isBefore(end);
+
   }
 
 }

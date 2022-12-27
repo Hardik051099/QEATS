@@ -12,6 +12,7 @@ import javax.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 // TODO: CRIO_TASK_MODULE_RESTAURANTSAPI
@@ -22,11 +23,20 @@ import lombok.RequiredArgsConstructor;
 //  /qeats/v1/restaurants?latitude=28.4900591&longitude=77.536386&searchFor=tamil,
 //  this class should be able to deserialize lat/long and optional searchFor from that.
 @Data
+@NoArgsConstructor
+@RequiredArgsConstructor
+@AllArgsConstructor
 public class GetRestaurantsRequest {
-    @NotNull
-    private final Double latitude;
-    @NotNull
-    private final Double longitude;
+
+    @NonNull
+    @Max(value=90)
+    @Min(value=-90)
+    private Double latitude;
+
+    @NonNull
+    @Max(value=180)
+    @Min(value=-180)
+    private Double longitude;
     private String searchFor;
 
 }

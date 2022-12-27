@@ -103,6 +103,30 @@ public class RestaurantControllerTest {
 
 
   @Test
+  public void correctRequestSendsResponseAndOkResult() throws Exception {
+    URI uri = UriComponentsBuilder
+        .fromPath(RESTAURANT_API_URI)
+        .queryParam("latitude", "50.23")
+        .queryParam("longitude", "120.54")
+        .build().toUri();
+
+    assertEquals(RESTAURANT_API_URI + "?latitude=50.23&longitude=120.54", uri.toString());
+
+    MockHttpServletResponse response = mvc.perform(
+        get(uri.toString()).accept(APPLICATION_JSON_UTF8)
+    ).andReturn().getResponse();
+
+    ArgumentCaptor<GetRestaurantsRequest> captor = ArgumentCaptor.forClass(GetRestaurantsRequest.class);
+
+    assertEquals(HttpStatus.OK.value(), response.getStatus());
+
+    verify(restaurantService,times(1)).findAllRestaurantsCloseBy(captor.capture(), any(LocalTime.class));
+    assertEquals("50.23", captor.getValue().getLatitude().toString());
+    assertEquals("120.54", captor.getValue().getLongitude().toString());
+
+  }
+
+  @Test
   public void invalidLatitudeResultsInBadHttpRequest() throws Exception {
     URI uri = UriComponentsBuilder
         .fromPath(RESTAURANT_API_URI)
