@@ -120,6 +120,7 @@ public class RestaurantControllerTest {
 
     assertEquals(HttpStatus.OK.value(), response.getStatus());
 
+    
     verify(restaurantService,times(1)).findAllRestaurantsCloseBy(captor.capture(), any(LocalTime.class));
     assertEquals("50.23", captor.getValue().getLatitude().toString());
     assertEquals("120.54", captor.getValue().getLongitude().toString());

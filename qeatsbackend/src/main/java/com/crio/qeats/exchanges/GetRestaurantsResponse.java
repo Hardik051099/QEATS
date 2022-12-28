@@ -10,6 +10,7 @@ import com.crio.qeats.dto.Restaurant;
 import org.springframework.data.annotation.Id;
 import java.util.List;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -49,10 +50,8 @@ import lombok.NoArgsConstructor;
 //    }
 //  ]
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class GetRestaurantsResponse {
-    List<Restaurant> restaurants;
+    private final List<Restaurant> restaurants;
 }
 
 // }
