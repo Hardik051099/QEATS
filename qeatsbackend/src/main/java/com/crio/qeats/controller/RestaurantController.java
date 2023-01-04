@@ -44,7 +44,7 @@ public class RestaurantController {
   public static final Double MIN_LAT = -90.0;
   public static final Double MAX_LAT = 90.0;
   public static final Double MIN_LON = -180.0;
-  public static final Double MAX_LON = 180.0;
+
 
   @Autowired
   private RestaurantService restaurantService;
@@ -68,7 +68,6 @@ public class RestaurantController {
 
     return ResponseEntity.ok().body(getRestaurantsResponse);
   }
-
 
   // TIP(MODULE_MENUAPI): Model Implementation for getting menu given a restaurantId.
   // Get the Menu for the given restaurantId
@@ -102,6 +101,7 @@ public class RestaurantController {
   //          : 5xx, if server side error.
   // Eg:
   // curl -X GET "http://localhost:8081/qeats/v1/menu?restaurantId=11"
+
 
 
 
