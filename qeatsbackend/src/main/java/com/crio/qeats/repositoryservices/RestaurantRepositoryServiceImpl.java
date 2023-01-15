@@ -6,6 +6,7 @@
 
 package com.crio.qeats.repositoryservices;
 
+import lombok.extern.log4j.Log4j2;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 
 @Primary
 @Service
+@Log4j2
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
 
 
@@ -38,11 +40,13 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   private Provider<ModelMapper> modelMapperProvider;
 
   private boolean isOpenNow(LocalTime time, RestaurantEntity res) {
+    // log.debug("DEBUG Hardik : isOpenNow():(RestaurantRepositoryServiceImpl.java) RestaurantEntity = "+res.toString());
+
     LocalTime openingTime = LocalTime.parse(res.getOpensAt());
     LocalTime closingTime = LocalTime.parse(res.getClosesAt());
-
     return time.isAfter(openingTime) && time.isBefore(closingTime);
   }
+
 
   // TODO: CRIO_TASK_MODULE_NOSQL
   // Objectives:
@@ -53,10 +57,12 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
 
     List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
+    log.debug("DEBUG Hardik : findAllRestaurantsCloseBy():(RestaurantRepositoryServiceImpl.java) RestaurantEntities = "+ restaurantEntities.get(1).toString());
 
     List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
     .map(restaurantEntity -> {
+        restaurantEntity.setCity("city");
       return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
     })
     .collect(Collectors.toList());
@@ -69,6 +75,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     // }
       //CHECKSTYLE:OFF
       //CHECKSTYLE:ON
+      log.debug("DEBUG Hardik : Restaurants "+restaurants.size());
     return restaurants;
   }
 

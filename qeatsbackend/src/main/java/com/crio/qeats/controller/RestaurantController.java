@@ -6,10 +6,13 @@
 
 package com.crio.qeats.controller;
 
+import com.crio.qeats.dto.Restaurant;
 import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.services.RestaurantService;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +68,13 @@ public class RestaurantController {
           .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
       log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
+    List<Restaurant> modifiedRestaurants = getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
+      String s = restaurant.getName().replaceAll("[Â©éí]", "e");
+      restaurant.setName(s);
+      return restaurant;
+    }).collect(Collectors.toList());
 
-    return ResponseEntity.ok().body(getRestaurantsResponse);
+    return ResponseEntity.ok().body(new GetRestaurantsResponse(modifiedRestaurants));
   }
 
   // TIP(MODULE_MENUAPI): Model Implementation for getting menu given a restaurantId.

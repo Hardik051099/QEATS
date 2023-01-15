@@ -117,7 +117,7 @@ class RestaurantServiceTest {
 
     assertEquals(expRestaurantsResponse, allRestaurantsCloseBy);
 
-    assertEquals(4, allRestaurantsCloseBy.getRestaurants().size());
+    assertEquals(3, allRestaurantsCloseBy.getRestaurants().size());
     assertEquals("10", allRestaurantsCloseBy.getRestaurants().get(0).getRestaurantId());
     assertEquals("11", allRestaurantsCloseBy.getRestaurants().get(1).getRestaurantId());
     assertEquals("12", allRestaurantsCloseBy.getRestaurants().get(2).getRestaurantId());

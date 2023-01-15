@@ -41,16 +41,25 @@ import lombok.NonNull;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Restaurant {
+  @JsonIgnore
+  private String id;
   @NotNull
   private String restaurantId;
+  @NotNull
   private String name;
+  @NotNull
   private String city;
+  @NotNull
   private String imageUrl;
+  @NotNull
   private Double latitude;
+  @NotNull
   private Double longitude;
+  @NotNull
   private String opensAt;
+  @NotNull
   private String closesAt;
+  @NotNull
   private List<String> attributes;
-
 }
 
