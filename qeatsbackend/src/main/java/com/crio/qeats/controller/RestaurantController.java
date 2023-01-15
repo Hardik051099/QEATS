@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RestController
 @RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
-
 public class RestaurantController {
 
   public static final String RESTAURANT_API_ENDPOINT = "/qeats/v1";
@@ -69,7 +68,7 @@ public class RestaurantController {
       log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
     List<Restaurant> modifiedRestaurants = getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
-      String s = restaurant.getName().replaceAll("[Â©éí]", "e");
+      String s = restaurant.getName().replaceAll("[^\\x20-\\x7e]", "e");
       restaurant.setName(s);
       return restaurant;
     }).collect(Collectors.toList());
