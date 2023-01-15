@@ -68,7 +68,7 @@ public class RestaurantController {
       log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
     List<Restaurant> modifiedRestaurants = getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
-      String s = restaurant.getName().replaceAll("[^\\x20-\\x7e]", "e");
+      String s = restaurant.getName().replaceAll("[^\\u0000-\\uFFFF]", "?");
       restaurant.setName(s);
       return restaurant;
     }).collect(Collectors.toList());
