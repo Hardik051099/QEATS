@@ -59,16 +59,22 @@ public class RestaurantController {
     if(getRestaurantsRequest.getLatitude()==null || getRestaurantsRequest.getLongitude()==null){
       return ResponseEntity.badRequest().body(null);
     }
-    log.info("getRestaurants called with {}", getRestaurantsRequest);
+    // log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
 
       //CHECKSTYLE:OFF
-      getRestaurantsResponse = restaurantService
-          .findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-      log.info("getRestaurants returned {}", getRestaurantsResponse);
+      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      // log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
+
+    // List<Restaurant> modifiedRestaurants = getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
+    //   String s = restaurant.getName().replaceAll("[^\\u0000-\\uFFFF]", "?");
+    //   restaurant.setName(s);
+    //   return restaurant;
+    // }).collect(Collectors.toList());
+
     List<Restaurant> modifiedRestaurants = getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
-      String s = restaurant.getName().replaceAll("[^\\u0000-\\uFFFF]", "?");
+      String s = restaurant.getName().replace("é", "e");
       restaurant.setName(s);
       return restaurant;
     }).collect(Collectors.toList());
@@ -102,7 +108,7 @@ public class RestaurantController {
   //    ],
   //    "restaurantId": "11"
   //  }
-  // }
+  // }./set
   // Error Response:
   // HTTP Code: 4xx, if client side error.
   //          : 5xx, if server side error.

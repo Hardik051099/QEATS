@@ -57,7 +57,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
       Double longitude, LocalTime currentTime, Double servingRadiusInKms) {
 
     List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
-    log.debug("DEBUG Hardik : findAllRestaurantsCloseBy():(RestaurantRepositoryServiceImpl.java) RestaurantEntities = "+ restaurantEntities.get(1).toString());
+    // log.debug("DEBUG Hardik : findAllRestaurantsCloseBy():(RestaurantRepositoryServiceImpl.java) RestaurantEntities = "+ restaurantEntities.toString());
 
     List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
@@ -75,7 +75,7 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
     // }
       //CHECKSTYLE:OFF
       //CHECKSTYLE:ON
-      log.debug("DEBUG Hardik : Restaurants "+restaurants.size());
+      // log.debug("DEBUG Hardik : Restaurants "+restaurants.size());
     return restaurants;
   }
 
