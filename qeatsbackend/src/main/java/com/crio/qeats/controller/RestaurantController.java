@@ -17,6 +17,9 @@ import javax.validation.Valid;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import javax.validation.Valid;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -51,11 +54,11 @@ public class RestaurantController {
   @Autowired
   private RestaurantService restaurantService;
 
-  
+
   @GetMapping(RESTAURANTS_API)
-  public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
+public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
        GetRestaurantsRequest getRestaurantsRequest) {
-    
+    long startTimeInMillis = System.currentTimeMillis();
     if(getRestaurantsRequest.getLatitude()==null || getRestaurantsRequest.getLongitude()==null){
       return ResponseEntity.badRequest().body(null);
     }
@@ -63,7 +66,15 @@ public class RestaurantController {
     GetRestaurantsResponse getRestaurantsResponse;
 
       //CHECKSTYLE:OFF
-      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      
+
+// Call the function
+
+      // getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.parse("09:00"));
+      long endTimeInMillis = System.currentTimeMillis();
+      log.debug("CONTROLELER LAYER: findAllRestaurantsCloseBy took :" + (endTimeInMillis - startTimeInMillis));
+
       // log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
 

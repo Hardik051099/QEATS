@@ -34,6 +34,9 @@ public class RestaurantEntity {
   private String name;
 
   @NotNull
+  private String city;
+
+  @NotNull
   private String imageUrl;
 
   @NotNull
@@ -50,20 +53,6 @@ public class RestaurantEntity {
 
   @NotNull
   private String closesAt;
-
-  @NotNull
-  private String city;
-
-
-  public String getOpensAt() {
-    return opensAt;
-  }
-
-  public String getClosesAt() {
-    return closesAt;
-  }
-
-  
 
 }
 
