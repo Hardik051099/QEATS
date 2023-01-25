@@ -255,7 +255,7 @@ private List<Restaurant> findRestaurantByNameNoCache(Double latitude,Double long
 
   long startTimeInMillis = System.currentTimeMillis();
   log.debug("Cache is not available , get from DB");
-  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByName("^"+searchString).get();
+  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByNameExact("^"+searchString).get();
 
   List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))

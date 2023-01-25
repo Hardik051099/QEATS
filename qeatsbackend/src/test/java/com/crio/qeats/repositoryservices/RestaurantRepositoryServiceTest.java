@@ -150,7 +150,7 @@ public class RestaurantRepositoryServiceTest {
 
     doReturn(Optional.of(allRestaurants))
         //doReturn(allRestaurants)
-        .when(restaurantRepository).findRestaurantsByName(any());
+        .when(restaurantRepository).findRestaurantsByNameExact(any());
 
     String searchFor = "A2B";
     List<Restaurant> foundRestaurantsList = restaurantRepositoryService
@@ -167,7 +167,7 @@ public class RestaurantRepositoryServiceTest {
 
     doReturn(Optional.of(allRestaurants))
     //doReturn(allRestaurants)
-        .when(restaurantRepository).findRestaurantsByName(any());
+        .when(restaurantRepository).findRestaurantsByNameExact(any());
     String searchFor = "A2B";
     List<Restaurant> foundRestaurantsList = restaurantRepositoryService
         .findRestaurantsByName(20.8, 30.1, searchFor,

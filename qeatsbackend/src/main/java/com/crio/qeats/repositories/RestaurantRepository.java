@@ -15,7 +15,7 @@ import org.springframework.data.mongodb.repository.Query;
 public interface RestaurantRepository extends MongoRepository<RestaurantEntity, String> {
     //db.restaurants.find({name:{$regex : "^Bask"}})
     @Query("{name:{$regex:?0}}")
-    Optional<List<RestaurantEntity>> findRestaurantsByName(String searchString);
+    Optional<List<RestaurantEntity>> findRestaurantsByNameExact(String searchString);
     //db.restaurants.find({attributes:{$regex : "^Dess"}})
     @Query("{attributes:{$regex:?0}}")
     Optional<List<RestaurantEntity>> findRestaurantsByAttributes(String searchString);
