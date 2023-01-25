@@ -24,8 +24,8 @@ import lombok.RequiredArgsConstructor;
 //  this class should be able to deserialize lat/long and optional searchFor from that.
 @Data
 @AllArgsConstructor
-@RequiredArgsConstructor
 @NoArgsConstructor
+@RequiredArgsConstructor
 public class GetRestaurantsRequest {
 
     @NonNull

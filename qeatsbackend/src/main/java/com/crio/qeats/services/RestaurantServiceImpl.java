@@ -63,6 +63,30 @@ public class RestaurantServiceImpl implements RestaurantService {
   }
   private boolean isTimeWithinRange(LocalTime start,LocalTime end, LocalTime current){
     return current.isAfter(start) && current.isBefore(end);
+  }
+
+  // TODO: CRIO_TASK_MODULE_RESTAURANTSEARCH
+  // Implement findRestaurantsBySearchQuery. The request object has the search string.
+  // We have to combine results from multiple sources:
+  // 1. Restaurants by name (exact and inexact)
+  // 2. Restaurants by cuisines (also called attributes)
+  // 3. Restaurants by food items it serves
+  // 4. Restaurants by food item attributes (spicy, sweet, etc)
+  // Remember, a restaurant must be present only once in the resulting list.
+  // Check RestaurantService.java file for the interface contract.
+  @Override
+  public GetRestaurantsResponse findRestaurantsBySearchQuery(
+      GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
+
+      final Double latitude = getRestaurantsRequest.getLatitude();
+      final Double longitude = getRestaurantsRequest.getLongitude();
+      String searchString = getRestaurantsRequest.getSearchFor();
+      // log.debug("DEBUG : findAllRestaurantsCloseBy():(RestaurantServiceImple.java) currentTime = "+currentTime.toString());
+      long startTimeInMillis = System.currentTimeMillis();
+      List<Restaurant> listOfRestaurants = restaurantRepositoryService.findRestaurantsByName(latitude, longitude,searchString, currentTime, getServingRadiusInKms(currentTime));
+      long endTimeInMillis = System.currentTimeMillis();
+      log.debug("SERVICE LAYER: findRestaurantsBySearchQuery took :" + (endTimeInMillis - startTimeInMillis));
+      return new GetRestaurantsResponse(listOfRestaurants);
 
   }
 

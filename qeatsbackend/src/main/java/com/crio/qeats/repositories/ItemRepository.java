@@ -9,5 +9,11 @@ import org.springframework.data.mongodb.repository.Query;
 
 public interface ItemRepository extends MongoRepository<ItemEntity, String> {
 
+    @Query("{name:{$regex:?0}}")
+    Optional<List<ItemEntity>> findItemsByName(String string);
+
+    @Query("{attributes:{$regex:?0}}")
+    Optional<List<ItemEntity>> findItemsByAttributes(String searchString);
+
 }
 
