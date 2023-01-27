@@ -16,9 +16,9 @@ import java.nio.charset.StandardCharsets;
 /**
  * A set of helper method for fixture files.
  */
-public class FixtureHelpers {
+public class FixtureHelpersTest {
 
-  private FixtureHelpers() { /* singleton */ }
+  private FixtureHelpersTest() { /* singleton */ }
 
   /**
    * Reads the given fixture file from the classpath (e. g. {@code src/test/resources}) and returns

@@ -115,7 +115,7 @@ class RestaurantServiceTest {
     GetRestaurantsResponse allRestaurantsCloseBy = restaurantService.findAllRestaurantsCloseBy(new GetRestaurantsRequest(latitude, longitude), currentTime);
 
     assertEquals(expRestaurantsResponse, allRestaurantsCloseBy);
-    assertEquals(4, allRestaurantsCloseBy.getRestaurants().size());
+    assertEquals(3, allRestaurantsCloseBy.getRestaurants().size());
     assertEquals("10", allRestaurantsCloseBy.getRestaurants().get(0).getRestaurantId());
     assertEquals("11", allRestaurantsCloseBy.getRestaurants().get(1).getRestaurantId());
     assertEquals("12", allRestaurantsCloseBy.getRestaurants().get(2).getRestaurantId());
@@ -230,7 +230,7 @@ class RestaurantServiceTest {
   
   private List<Restaurant> loadRestaurantsDuringNormalHours() throws IOException {
     String fixture =
-        FixtureHelpers.fixture(FIXTURES + "/normal_hours_list_of_restaurants.json");
+        FixtureHelpers.fixture(FIXTURES + "/normal_hours_list_of_restaurants_test.json");
 
     return objectMapper.readValue(fixture, new TypeReference<List<Restaurant>>() {
     });

@@ -23,21 +23,25 @@ import lombok.RequiredArgsConstructor;
 //  /qeats/v1/restaurants?latitude=28.4900591&longitude=77.536386&searchFor=tamil,
 //  this class should be able to deserialize lat/long and optional searchFor from that.
 @Data
-@AllArgsConstructor
+// @AllArgsConstructor
 @NoArgsConstructor
-@RequiredArgsConstructor
 public class GetRestaurantsRequest {
 
-    @NonNull
+    @NotNull
     @Max(value=90)
     @Min(value=-90)
     private Double latitude;
 
-    @NonNull
+    @NotNull
     @Max(value=180)
     @Min(value=-180)
     private Double longitude;
     private String searchFor;
+
+    public GetRestaurantsRequest(Double latitude, Double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
 
 }
 

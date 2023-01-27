@@ -11,6 +11,7 @@ import com.crio.qeats.exchanges.GetRestaurantsRequest;
 import com.crio.qeats.exchanges.GetRestaurantsResponse;
 import com.crio.qeats.services.RestaurantService;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.validation.Valid;
@@ -60,9 +61,10 @@ public class RestaurantController {
 public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
        GetRestaurantsRequest getRestaurantsRequest) {
     long startTimeInMillis = System.currentTimeMillis();
-    if(getRestaurantsRequest.getLatitude()==null || getRestaurantsRequest.getLongitude()==null){
-      return ResponseEntity.badRequest().body(null);
-    }
+    String searchFor = getRestaurantsRequest.getSearchFor();
+    // if(getRestaurantsRequest.getLatitude()==null || getRestaurantsRequest.getLongitude()==null){
+    //   return ResponseEntity.badRequest().body(null);
+    // }
     // log.info("getRestaurants called with {}", getRestaurantsRequest);
     GetRestaurantsResponse getRestaurantsResponse;
 
@@ -72,9 +74,9 @@ public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
       // Call the function
 
       // getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
-      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.parse("09:00"));
-      long endTimeInMillis = System.currentTimeMillis();
-      log.debug("CONTROLELER LAYER: findAllRestaurantsCloseBy took :" + (endTimeInMillis - startTimeInMillis));
+      // getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.parse("09:00"));
+      // long endTimeInMillis = System.currentTimeMillis();
+      // log.debug("CONTROLELER LAYER: findAllRestaurantsCloseBy took :" + (endTimeInMillis - startTimeInMillis));
 
       // log.info("getRestaurants returned {}", getRestaurantsResponse);
       //CHECKSTYLE:ON
@@ -85,12 +87,23 @@ public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
     //   return restaurant;
     // }).collect(Collectors.toList());
 
-    List<Restaurant> modifiedRestaurants = getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
+    if(searchFor != null && !searchFor.equals("")) {
+      getRestaurantsResponse = restaurantService.findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.now());
+    }else{
+      // getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.parse("09:00"));
+      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+    }
+
+    List<Restaurant> modifiedRestaurants = new ArrayList<>();
+    
+    if(getRestaurantsResponse!=null && !getRestaurantsResponse.getRestaurants().isEmpty()){
+    modifiedRestaurants= getRestaurantsResponse.getRestaurants().stream().map(restaurant -> {
       String s = restaurant.getName().replace("é", "e");
       restaurant.setName(s);
       return restaurant;
     }).collect(Collectors.toList());
 
+  }
     return ResponseEntity.ok().body(new GetRestaurantsResponse(modifiedRestaurants));
   }
 

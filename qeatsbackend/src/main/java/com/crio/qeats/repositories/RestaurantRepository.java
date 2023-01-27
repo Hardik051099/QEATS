@@ -20,7 +20,7 @@ public interface RestaurantRepository extends MongoRepository<RestaurantEntity, 
     @Query("{attributes:{$regex:?0}}")
     Optional<List<RestaurantEntity>> findRestaurantsByAttributes(String searchString);
 
-    Optional<List<RestaurantEntity>> findRestaurantsByRestaurantIds (List<String> Ids);
+    Optional<List<RestaurantEntity>> findRestaurantsByRestaurantId (List<String> Ids);
 
 
 

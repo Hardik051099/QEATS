@@ -41,6 +41,10 @@ public class RestaurantServiceImpl implements RestaurantService {
       GetRestaurantsRequest getRestaurantsRequest, LocalTime currentTime) {
         final Double latitude = getRestaurantsRequest.getLatitude();
         final Double longitude = getRestaurantsRequest.getLongitude();
+        // if(getRestaurantsRequest.getSearchFor() != null){
+        //   //if searchFor exists then call search api
+        //   return findRestaurantsBySearchQuery(getRestaurantsRequest, currentTime);
+        // }
         // log.debug("DEBUG : findAllRestaurantsCloseBy():(RestaurantServiceImple.java) currentTime = "+currentTime.toString());
         long startTimeInMillis = System.currentTimeMillis();
         List<Restaurant> listOfRestaurants = restaurantRepositoryService.findAllRestaurantsCloseBy(latitude, longitude, currentTime, getServingRadiusInKms(currentTime));
@@ -81,9 +85,25 @@ public class RestaurantServiceImpl implements RestaurantService {
       final Double latitude = getRestaurantsRequest.getLatitude();
       final Double longitude = getRestaurantsRequest.getLongitude();
       String searchString = getRestaurantsRequest.getSearchFor();
+
       // log.debug("DEBUG : findAllRestaurantsCloseBy():(RestaurantServiceImple.java) currentTime = "+currentTime.toString());
       long startTimeInMillis = System.currentTimeMillis();
-      List<Restaurant> listOfRestaurants = restaurantRepositoryService.findRestaurantsByName(latitude, longitude,searchString, currentTime, getServingRadiusInKms(currentTime));
+      List<Restaurant> listOfRestaurants = new ArrayList<>();
+      
+      if(!(searchString.isBlank())){
+        //fetch all search results
+        List<Restaurant> listByName = restaurantRepositoryService.findRestaurantsByName(latitude, longitude,searchString, currentTime, getServingRadiusInKms(currentTime));
+        List<Restaurant> listByAttributes = restaurantRepositoryService.findRestaurantsByAttributes(latitude, longitude,searchString, currentTime, getServingRadiusInKms(currentTime));
+        List<Restaurant> listByItemName = restaurantRepositoryService.findRestaurantsByItemName(latitude, longitude,searchString, currentTime, getServingRadiusInKms(currentTime));
+        List<Restaurant> listByItemAttribute = restaurantRepositoryService.findRestaurantsByItemAttributes(latitude, longitude,searchString, currentTime, getServingRadiusInKms(currentTime));
+        //merge them all in single list
+        listOfRestaurants.addAll(listByName);
+        listOfRestaurants.addAll(listByAttributes);
+        listOfRestaurants.addAll(listByItemName);
+        listOfRestaurants.addAll(listByItemAttribute);
+      }
+
+
       long endTimeInMillis = System.currentTimeMillis();
       log.debug("SERVICE LAYER: findRestaurantsBySearchQuery took :" + (endTimeInMillis - startTimeInMillis));
       return new GetRestaurantsResponse(listOfRestaurants);

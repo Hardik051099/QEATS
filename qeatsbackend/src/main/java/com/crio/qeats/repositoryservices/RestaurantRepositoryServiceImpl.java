@@ -75,7 +75,7 @@ import org.springframework.stereotype.Service;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
-@Primary
+// @Primary
 @Service
 @Log4j2
 public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryService {
@@ -410,7 +410,7 @@ private List<Restaurant> findRestaurantByItemNameNoCache(Double latitude,Double 
   .forEach(e -> restaurantIds.add(e.getRestaurantId()));
 
   //fetch restaurant by restaurant Ids
-  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByRestaurantIds(restaurantIds).get();
+  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByRestaurantId(restaurantIds).get();
 
   List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
@@ -488,7 +488,7 @@ private List<Restaurant> findRestaurantByItemAttributeNoCache(Double latitude,Do
   .forEach(e -> restaurantIds.add(e.getRestaurantId()));
 
   //fetch restaurant by restaurant Ids
-  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByRestaurantIds(restaurantIds).get();
+  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByRestaurantId(restaurantIds).get();
 
   List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
