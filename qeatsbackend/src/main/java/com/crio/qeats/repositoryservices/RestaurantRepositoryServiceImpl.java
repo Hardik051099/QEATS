@@ -182,7 +182,7 @@ private List<Restaurant> findAllRestaurantsCloseByNoCache(Double latitude,Double
   log.debug("Cache is not available , get from DB");
   List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
   // redisConfiguration.initCache();
-  // log.debug("DEBUG Hardik : findAllRestaurantsCloseBy():(RestaurantRepositoryServiceImpl.java) RestaurantEntities = "+ restaurantEntities.toString());
+  log.debug("DEBUG Hardik : findAllRestaurantsCloseBy():(RestaurantRepositoryServiceImpl.java) RestaurantEntities = "+ restaurantEntities.get(0).toString());
   List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
     .map(restaurantEntity -> {
@@ -255,7 +255,7 @@ private List<Restaurant> findRestaurantByNameNoCache(Double latitude,Double long
 
   long startTimeInMillis = System.currentTimeMillis();
   log.debug("Cache is not available , get from DB");
-  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByNameExact("^"+searchString).get();
+  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByNameExact(searchString).get();
 
   List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
@@ -324,7 +324,8 @@ private List<Restaurant> findRestaurantByAttributesNoCache(Double latitude,Doubl
 
   long startTimeInMillis = System.currentTimeMillis();
   log.debug("Cache is not available , get from DB");
-  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByAttributes("^"+searchString).get();
+  List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByAttributes(searchString).get();
+  log.debug("REPOSITORY LAYER: restaurantENTITIES by attribute :" + restaurantEntities.toString());
 
   List<Restaurant> restaurants = restaurantEntities.stream()
     .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
@@ -385,7 +386,8 @@ private List<Restaurant> findRestaurantByItemNameNoCache(Double latitude,Double 
   long startTimeInMillis = System.currentTimeMillis();
   log.debug("Cache is not available , get from DB");
   //Fetch all items by its name
-  List<ItemEntity> itemEntities = itemRepository.findItemsByName("^"+searchString).get();
+  List<ItemEntity> itemEntities = itemRepository.findItemsByName(searchString).get();
+  log.debug("REPOSITORY LAYER: itemEntities by name :" + itemEntities.toString());
   List<String> itemIds = new ArrayList<>();
   List<String> restaurantIds = new ArrayList<>();
 
@@ -472,7 +474,9 @@ private List<Restaurant> findRestaurantByItemAttributeNoCache(Double latitude,Do
   log.debug("Cache is not available , get from DB");
 
   //Fetch all items by its name
-  List<ItemEntity> itemEntities = itemRepository.findItemsByAttributes("^"+searchString).get();
+  List<ItemEntity> itemEntities = itemRepository.findItemsByAttributes(searchString).get();
+  log.debug("REPOSITORY LAYER: itemEntities by attribute :" + itemEntities.toString());
+
   List<String> itemIds = new ArrayList<>();
   List<String> restaurantIds = new ArrayList<>();
 

@@ -50,6 +50,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         List<Restaurant> listOfRestaurants = restaurantRepositoryService.findAllRestaurantsCloseBy(latitude, longitude, currentTime, getServingRadiusInKms(currentTime));
         long endTimeInMillis = System.currentTimeMillis();
         log.debug("SERVICE LAYER: findAllRestaurantsCloseBy took :" + (endTimeInMillis - startTimeInMillis));
+        // log.debug("DEBUG -------------------- HArdik " + latitude+" "+longitude+" "+currentTime.toString());
         return new GetRestaurantsResponse(listOfRestaurants);
   }
 

@@ -37,7 +37,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Log4j2
 @RestController
 @RequestMapping(RestaurantController.RESTAURANT_API_ENDPOINT)
-
 public class RestaurantController {
 
   public static final String RESTAURANT_API_ENDPOINT = "/qeats/v1";
@@ -88,10 +87,11 @@ public ResponseEntity<GetRestaurantsResponse> getRestaurants(@Valid
     // }).collect(Collectors.toList());
 
     if(searchFor != null && !searchFor.equals("")) {
-      getRestaurantsResponse = restaurantService.findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.now());
+      getRestaurantsResponse = restaurantService.findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.parse("09:00"));
+      // getRestaurantsResponse = restaurantService.findRestaurantsBySearchQuery(getRestaurantsRequest, LocalTime.now());
     }else{
-      // getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.parse("09:00"));
-      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
+      getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.parse("09:00"));
+      // getRestaurantsResponse = restaurantService.findAllRestaurantsCloseBy(getRestaurantsRequest, LocalTime.now());
     }
 
     List<Restaurant> modifiedRestaurants = new ArrayList<>();
