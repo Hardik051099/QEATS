@@ -6,14 +6,11 @@
 
 package com.crio.qeats.exchanges;
 
-import com.crio.qeats.dto.Restaurant;
-import org.springframework.data.annotation.Id;
-import java.util.List;
-import javax.validation.constraints.NotNull;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.List;
+import com.crio.qeats.dto.Restaurant;
 
 // TODO: CRIO_TASK_MODULE_RESTAURANTSAPI
 //  Implement GetRestaurantsResponse.

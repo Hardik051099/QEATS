@@ -1,20 +1,16 @@
 
 package com.crio.qeats.repositoryservices;
 
-import com.crio.qeats.dto.Restaurant;
-import com.crio.qeats.utils.FixtureHelpers;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Future;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
-import org.springframework.stereotype.Service;
+import com.crio.qeats.dto.Restaurant;
+import com.crio.qeats.utils.FixtureHelpers;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 // @Repository
 public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositoryService {
@@ -70,6 +66,30 @@ public class RestaurantRepositoryServiceDummyImpl implements RestaurantRepositor
 
   public List<Restaurant> findRestaurantsByItemAttributes(Double latitude, Double longitude,
       String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByNameAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByItemNameAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+    return null;
+  }
+
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude,
+      Double longitude, String searchString, LocalTime currentTime, Double servingRadiusInKms) {
     return null;
   }
 

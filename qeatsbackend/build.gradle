@@ -1,6 +1,5 @@
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 /*
  *
  *  * Copyright (c) Crio.Do 2019. All rights reserved

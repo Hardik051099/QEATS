@@ -6,74 +6,34 @@
 
 package com.crio.qeats.repositoryservices;
 
+import ch.hsr.geohash.GeoHash;
 import lombok.extern.log4j.Log4j2;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import java.io.IOException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collector;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 import javax.inject.Provider;
-import com.crio.qeats.dto.Restaurant;
-import com.crio.qeats.models.RestaurantEntity;
-import com.crio.qeats.repositories.RestaurantRepository;
-import com.crio.qeats.utils.GeoUtils;
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Primary;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.stereotype.Service;
-import ch.hsr.geohash.GeoHash;
-import com.crio.qeats.QEatsApplication;
 import com.crio.qeats.configs.RedisConfiguration;
 import com.crio.qeats.dto.Restaurant;
-import com.crio.qeats.globals.GlobalConstants;
-import com.crio.qeats.models.RestaurantEntity;
-import com.crio.qeats.repositories.RestaurantRepository;
-import com.crio.qeats.utils.GeoLocation;
-import com.crio.qeats.utils.GeoUtils;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import ch.hsr.geohash.GeoHash;
-import com.crio.qeats.configs.RedisConfiguration;
-import com.crio.qeats.dto.Restaurant;
-import com.crio.qeats.globals.GlobalConstants;
 import com.crio.qeats.models.ItemEntity;
 import com.crio.qeats.models.MenuEntity;
 import com.crio.qeats.models.RestaurantEntity;
 import com.crio.qeats.repositories.ItemRepository;
 import com.crio.qeats.repositories.MenuRepository;
 import com.crio.qeats.repositories.RestaurantRepository;
-import com.crio.qeats.utils.GeoLocation;
 import com.crio.qeats.utils.GeoUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.io.IOException;
-import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import javax.inject.Provider;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.scheduling.annotation.AsyncResult;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import redis.clients.jedis.Jedis;
-import redis.clients.jedis.JedisPool;
 
 // @Primary
 @Service
@@ -92,13 +52,13 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
   @Autowired
   private RedisConfiguration redisConfiguration;
 
-  @Autowired
-  private MongoTemplate mongoTemplate;
+  // @Autowired
+  // private MongoTemplate mongoTemplate;
 
   @Autowired
   private Provider<ModelMapper> modelMapperProvider;
 
-
+  private int PRECISION = 7;
 
 
 // Interface Methods
@@ -173,6 +133,48 @@ public class RestaurantRepositoryServiceImpl implements RestaurantRepositoryServ
          return findRestaurantByItemAttributeWithCache(latitude, longitude,searchString, currentTime, servingRadiusInKms);
   }
 
+  @Async
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByNameAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+        if(redisConfiguration.isCacheAvailable()){
+          return CompletableFuture.completedFuture(findRestaurantByNameWithCache(latitude, longitude,searchString,currentTime, servingRadiusInKms));
+         }
+         return CompletableFuture.completedFuture(findRestaurantByNameNoCache(latitude, longitude,searchString, currentTime, servingRadiusInKms));
+  }
+
+  @Async
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByAttributesAsync(
+      Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+        if(redisConfiguration.isCacheAvailable()){
+          return CompletableFuture.completedFuture(findRestaurantByAttributesWithCache(latitude, longitude,searchString,currentTime, servingRadiusInKms));
+         }
+         return CompletableFuture.completedFuture(findRestaurantByAttributesNoCache(latitude, longitude,searchString, currentTime, servingRadiusInKms));
+  }
+
+  @Async
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByItemNameAsync(
+      Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+        if(redisConfiguration.isCacheAvailable()){
+          return CompletableFuture.completedFuture(findRestaurantByItemNameWithCache(latitude, longitude,searchString,currentTime, servingRadiusInKms));
+         }
+         return CompletableFuture.completedFuture(findRestaurantByItemNameNoCache(latitude, longitude,searchString, currentTime, servingRadiusInKms));
+  }
+
+  @Async
+  @Override
+  public CompletableFuture<List<Restaurant>> findRestaurantsByItemAttributesAsync(Double latitude, Double longitude,
+      String searchString, LocalTime currentTime, Double servingRadiusInKms) {
+        if(redisConfiguration.isCacheAvailable()){
+          return CompletableFuture.completedFuture(findRestaurantByItemAttributeNoCache(latitude, longitude,searchString,currentTime, servingRadiusInKms));
+         }
+         return CompletableFuture.completedFuture(findRestaurantByItemAttributeWithCache(latitude, longitude,searchString, currentTime, servingRadiusInKms));
+  }
+  
 
 
 //Actual Implementations
@@ -183,30 +185,10 @@ private List<Restaurant> findAllRestaurantsCloseByNoCache(Double latitude,Double
   List<RestaurantEntity> restaurantEntities = restaurantRepository.findAll();
   // redisConfiguration.initCache();
   log.debug("DEBUG Hardik : findAllRestaurantsCloseBy():(RestaurantRepositoryServiceImpl.java) RestaurantEntities = "+ restaurantEntities.get(0).toString());
-  List<Restaurant> restaurants = restaurantEntities.stream()
-    .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
-    .map(restaurantEntity -> {
-    restaurantEntity.setCity("Boisar");
-    return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
-  })
-    .collect(Collectors.toList());
-
+  List<Restaurant> restaurants = mapRestaurantsEntityToRestaurantAndFilter(restaurantEntities,currentTime,latitude,longitude,servingRadiusInKms);
   //Add in cache
-  JedisPool jedisPool = redisConfiguration.getJedisPool();
-  Jedis jedis = jedisPool.getResource();
-  String coordsKey = getGeoHashString(latitude, longitude, 7);
-  String jsonString = "";
-  try {
-    jsonString = new ObjectMapper().writeValueAsString(restaurants);
-  } catch (JsonProcessingException e) {
-    e.printStackTrace();
-  }
-  jedis.set(coordsKey, jsonString);
-  // for (RestaurantEntity restaurantEntity : restaurantEntities){
-  //   if(isRestaurantCloseByAndOpen(restaurantEntity,currentTime,latitude,longitude,servingRadiusInKms)){
-  //     restaurants.add(modelMapperProvider.get().map(restaurantEntity, Restaurant.class));
-  //   }
-  // }
+  String coordsKey = getGeoHashString(latitude, longitude, PRECISION);
+  addRestaurantstoCache(coordsKey, restaurants);
   //CHECKSTYLE:OFF
   //CHECKSTYLE:ON
   // log.debug("DEBUG Hardik : Restaurants "+restaurants.size());
@@ -228,7 +210,7 @@ private List<Restaurant> findAllRestaurantsCloseByWithCache(Double latitude,Doub
   List<Restaurant> restaurants = new ArrayList<>();
 
   Jedis jedis = jedisPool.getResource();
-  String coordsKey = getGeoHashString(latitude, longitude, 7);
+  String coordsKey = getGeoHashString(latitude, longitude, PRECISION);
   String restaurantList = jedis.get(coordsKey);
 
   if(restaurantList!=null){
@@ -257,13 +239,7 @@ private List<Restaurant> findRestaurantByNameNoCache(Double latitude,Double long
   log.debug("Cache is not available , get from DB");
   List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByNameExact(searchString).get();
 
-  List<Restaurant> restaurants = restaurantEntities.stream()
-    .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
-    .map(restaurantEntity -> {
-    restaurantEntity.setCity("Boisar");
-    return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
-  })
-    .collect(Collectors.toList());
+  List<Restaurant> restaurants = mapRestaurantsEntityToRestaurantAndFilter(restaurantEntities, currentTime, latitude, longitude, servingRadiusInKms);
     
     //Sort by exact matches at start
     Collections.sort(restaurants,(r1,r2)-> {
@@ -275,16 +251,9 @@ private List<Restaurant> findRestaurantByNameNoCache(Double latitude,Double long
     });
 
   //Add in cache
-  JedisPool jedisPool = redisConfiguration.getJedisPool();
-  Jedis jedis = jedisPool.getResource();
+
   String coordsKey = getGeoHashString(latitude, longitude, 7)+searchString;
-  String jsonString = "";
-  try {
-    jsonString = new ObjectMapper().writeValueAsString(restaurants);
-  } catch (JsonProcessingException e) {
-    e.printStackTrace();
-  }
-  jedis.set(coordsKey, jsonString);
+  addRestaurantstoCache(coordsKey, restaurants);
   //CHECKSTYLE:OFF
   //CHECKSTYLE:ON
   long endTimeInMillis = System.currentTimeMillis();
@@ -298,7 +267,7 @@ private List<Restaurant> findRestaurantByNameWithCache(Double latitude,Double lo
   JedisPool jedisPool = redisConfiguration.getJedisPool();
   List<Restaurant> restaurants = new ArrayList<>();
   Jedis jedis = jedisPool.getResource();
-  String coordsKey = getGeoHashString(latitude, longitude, 7)+searchString;
+  String coordsKey = getGeoHashString(latitude, longitude, PRECISION)+searchString;
   String restaurantList = jedis.get(coordsKey);
 
   if(restaurantList!=null){
@@ -327,25 +296,11 @@ private List<Restaurant> findRestaurantByAttributesNoCache(Double latitude,Doubl
   List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByAttributes(searchString).get();
   log.debug("REPOSITORY LAYER: restaurantENTITIES by attribute :" + restaurantEntities.toString());
 
-  List<Restaurant> restaurants = restaurantEntities.stream()
-    .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
-    .map(restaurantEntity -> {
-    restaurantEntity.setCity("Boisar");
-    return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
-  })
-    .collect(Collectors.toList());
+  List<Restaurant> restaurants = mapRestaurantsEntityToRestaurantAndFilter(restaurantEntities, currentTime, latitude, longitude, servingRadiusInKms);
 
   //Add in cache
-  JedisPool jedisPool = redisConfiguration.getJedisPool();
-  Jedis jedis = jedisPool.getResource();
-  String coordsKey = getGeoHashString(latitude, longitude, 7)+searchString;
-  String jsonString = "";
-  try {
-    jsonString = new ObjectMapper().writeValueAsString(restaurants);
-  } catch (JsonProcessingException e) {
-    e.printStackTrace();
-  }
-  jedis.set(coordsKey, jsonString);
+  String coordsKey = getGeoHashString(latitude, longitude, PRECISION)+searchString;
+  addRestaurantstoCache(coordsKey, restaurants);
   //CHECKSTYLE:OFF
   //CHECKSTYLE:ON
   long endTimeInMillis = System.currentTimeMillis();
@@ -359,7 +314,7 @@ private List<Restaurant> findRestaurantByAttributesWithCache(Double latitude,Dou
   JedisPool jedisPool = redisConfiguration.getJedisPool();
   List<Restaurant> restaurants = new ArrayList<>();
   Jedis jedis = jedisPool.getResource();
-  String coordsKey = getGeoHashString(latitude, longitude, 7)+searchString;
+  String coordsKey = getGeoHashString(latitude, longitude, PRECISION)+searchString;
   String restaurantList = jedis.get(coordsKey);
 
   if(restaurantList!=null){
@@ -414,25 +369,11 @@ private List<Restaurant> findRestaurantByItemNameNoCache(Double latitude,Double 
   //fetch restaurant by restaurant Ids
   List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByRestaurantId(restaurantIds).get();
 
-  List<Restaurant> restaurants = restaurantEntities.stream()
-    .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
-    .map(restaurantEntity -> {
-    restaurantEntity.setCity("Boisar");
-    return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
-  })
-    .collect(Collectors.toList());
+  List<Restaurant> restaurants = mapRestaurantsEntityToRestaurantAndFilter(restaurantEntities, currentTime, latitude, longitude, servingRadiusInKms);
 
   //Add in cache
-  JedisPool jedisPool = redisConfiguration.getJedisPool();
-  Jedis jedis = jedisPool.getResource();
-  String coordsKey = getGeoHashString(latitude, longitude, 7)+searchString;
-  String jsonString = "";
-  try {
-    jsonString = new ObjectMapper().writeValueAsString(restaurants);
-  } catch (JsonProcessingException e) {
-    e.printStackTrace();
-  }
-  jedis.set(coordsKey, jsonString);
+  String coordsKey = getGeoHashString(latitude, longitude, PRECISION)+searchString;
+  addRestaurantstoCache(coordsKey, restaurants);
   //CHECKSTYLE:OFF
   //CHECKSTYLE:ON
   long endTimeInMillis = System.currentTimeMillis();
@@ -494,25 +435,11 @@ private List<Restaurant> findRestaurantByItemAttributeNoCache(Double latitude,Do
   //fetch restaurant by restaurant Ids
   List<RestaurantEntity> restaurantEntities = restaurantRepository.findRestaurantsByRestaurantId(restaurantIds).get();
 
-  List<Restaurant> restaurants = restaurantEntities.stream()
-    .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
-    .map(restaurantEntity -> {
-    restaurantEntity.setCity("Boisar");
-    return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
-  })
-    .collect(Collectors.toList());
+  List<Restaurant> restaurants = mapRestaurantsEntityToRestaurantAndFilter(restaurantEntities, currentTime, latitude, longitude, servingRadiusInKms);
 
   //Add in cache
-  JedisPool jedisPool = redisConfiguration.getJedisPool();
-  Jedis jedis = jedisPool.getResource();
   String coordsKey = getGeoHashString(latitude, longitude, 7)+searchString;
-  String jsonString = "";
-  try {
-    jsonString = new ObjectMapper().writeValueAsString(restaurants);
-  } catch (JsonProcessingException e) {
-    e.printStackTrace();
-  }
-  jedis.set(coordsKey, jsonString);
+  addRestaurantstoCache(coordsKey, restaurants);
   //CHECKSTYLE:OFF
   //CHECKSTYLE:ON
   long endTimeInMillis = System.currentTimeMillis();
@@ -549,9 +476,6 @@ private List<Restaurant> findRestaurantByItemAttributeWithCache(Double latitude,
 }
   
 
-
-
-
 //Utility Methods
 /**
    * Utility method to check if a restaurant is within the serving radius at a given time.
@@ -580,7 +504,27 @@ private List<Restaurant> findRestaurantByItemAttributeWithCache(Double latitude,
     return time.isAfter(openingTime) && time.isBefore(closingTime);
   }
 
-
+  private void addRestaurantstoCache(String coordsKey , List<Restaurant> restaurants){
+    JedisPool jedisPool = redisConfiguration.getJedisPool();
+    Jedis jedis = jedisPool.getResource();
+    String jsonString = "";
+    try {
+      jsonString = new ObjectMapper().writeValueAsString(restaurants);
+    } catch (JsonProcessingException e) {
+      e.printStackTrace();
+    }
+    jedis.set(coordsKey, jsonString);
+  }
+  
+  private List<Restaurant> mapRestaurantsEntityToRestaurantAndFilter(List<RestaurantEntity> restaurantEntities,LocalTime currentTime,Double latitude,Double longitude,Double servingRadiusInKms){
+      return restaurantEntities.stream()
+      .filter(restaurantEntity -> isRestaurantCloseByAndOpen(restaurantEntity, currentTime, latitude, longitude, servingRadiusInKms))
+      .map(restaurantEntity -> {
+      restaurantEntity.setCity("Boisar");
+      return modelMapperProvider.get().map(restaurantEntity, Restaurant.class);
+    })
+      .collect(Collectors.toList());
+  }
 
 }
 
